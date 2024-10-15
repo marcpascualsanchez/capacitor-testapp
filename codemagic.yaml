@@ -3,9 +3,8 @@ workflows:
     name: Ionic App Workflow
     max_build_duration: 60  # Duración máxima en minutos
     environment:
-      node: 18.0.0  # Especifica la versión de Node.js (puedes ajustar según la que necesites)
-      ionic: 7.2.0  # Especifica la versión de Ionic CLI
-      flutter: false  # No usar Flutter en este caso
+      node: '18.0.0'  # Especifica la versión de Node.js (puedes ajustar según la que necesites)
+      ionic: '7.2.0'  # Especifica la versión de Ionic CLI
       xcode: latest  # Si es necesario compilar para iOS, define la versión de Xcode (latest o especifica la versión)
       android: true  # Habilita Android SDK
       vars:
