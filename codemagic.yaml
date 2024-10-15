@@ -1,5 +1,51 @@
 workflows:
-  hello-world:
-    name: Hello world workflow
+  ionic-app:
+    name: Ionic App Workflow
+    max_build_duration: 60  # Duración máxima en minutos
+    environment:
+      node: 18.0.0  # Especifica la versión de Node.js (puedes ajustar según la que necesites)
+      ionic: 7.2.0  # Especifica la versión de Ionic CLI
+      flutter: false  # No usar Flutter en este caso
+      xcode: latest  # Si es necesario compilar para iOS, define la versión de Xcode (latest o especifica la versión)
+      android: true  # Habilita Android SDK
+      vars:
+        # Variables de entorno si necesitas para la firma del APK
+        RELEASE_KEYSTORE: 'I_AM_NOT_A_VALID_KEY'
+        RELEASE_KEYSTORE_PASSWORD: 'I_AM_NOT_A_VALID_KEY'
+        RELEASE_KEY_ALIAS: 'I_AM_NOT_A_VALID_KEY'
+        RELEASE_KEY_PASSWORD: 'I_AM_NOT_A_VALID_KEY'
+
     scripts:
-        - echo "Hello World!"
+      - name: Instalar dependencias
+        script: |
+          npm install  # Instala las dependencias de la aplicación Ionic
+          npm install -g @ionic/cli  # Instala Ionic CLI globalmente
+          ionic info  # Verifica la configuración de Ionic y su entorno
+
+      - name: Compilar para Android
+        script: |
+          ionic build  # Construye la aplicación web
+          npx cap sync android  # Sincroniza con Capacitor para Android
+          cd android && ./gradlew assembleRelease  # Genera el APK de Android en modo release
+
+      - name: Compilar para iOS
+        script: |
+          ionic build  # Construye la aplicación web
+          npx cap sync ios  # Sincroniza con Capacitor para iOS
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release  # Construye la aplicación iOS en modo release
+
+    artifacts:
+      - android/app/build/outputs/**/*.apk  # Especifica el APK generado para Android
+      - ios/build/**/*.app  # Especifica el artefacto de iOS generado
+
+    publishing:
+      scripts:
+        - name: Subir APK a Google Play
+          script: |
+            # Subir el APK generado a Google Play con Fastlane
+            fastlane supply --apk android/app/build/outputs/apk/release/app-release.apk --track beta --json_key path/to/google_play_key.json --package_name com.yourapp.package
+
+        - name: Subir a TestFlight (iOS)
+          script: |
+            # Subir el IPA generado a TestFlight con Fastlane
+            fastlane pilot upload --ipa ios/build/Release-iphoneos/App.ipa
