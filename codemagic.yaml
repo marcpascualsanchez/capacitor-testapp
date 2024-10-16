@@ -9,3 +9,4 @@ workflows:
         script: |
           echo "Hello World!" 
           printenv
+          echo GCLOUD_SERVICE_ACCOUNT_CREDENTIALS = $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
