@@ -1,6 +1,9 @@
 workflows:
   check-env-vars:
     name: hello world
+    environment:
+      groups:
+        - TEST
     scripts: 
       - name: Check env vars
         script: |
